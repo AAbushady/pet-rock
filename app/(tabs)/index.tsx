@@ -1,4 +1,5 @@
 // app/(tabs)/index.tsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -101,6 +102,8 @@ export default function HomeScreen() {
   if (showWelcome) {
     return <WelcomeScreen onComplete={(userName, petName) => {
       console.log("User completed welcome:", userName, petName);
+      setUserName(userName);
+      setPetName(petName);
       setShowWelcome(false);
     }} />;
   }
@@ -142,6 +145,14 @@ export default function HomeScreen() {
             onPress={() => completeTask(15)}
           />
         </View>
+        <View style={styles.taskButton}>
+          <Button title="🧨 Clear All Data (DEBUG)" onPress={async () => {
+            await AsyncStorage.clear();
+            // reload the page
+            window.location.reload();
+          }}  />
+        </View>
+        
       </View>
     </SafeAreaView>
   );

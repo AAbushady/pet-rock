@@ -19,7 +19,6 @@ export default function HomeScreen() {
   const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Start as loading
   const [showWelcome, setShowWelcome] = useState(false);
-  const [isFirstLaunch, setIsFirstLaunch] = useState(false);
   
   // load saved data when app starts
   useEffect(() => {

@@ -9,6 +9,7 @@ const KEYS = {
 };
 
 export interface UserProgress {
+  userName: string;
   petName: string;
   totalXP: number;
   currentStreak: number;

@@ -8,13 +8,16 @@ import {
   View
 } from 'react-native';
 import { PetRock } from '../../components/PetRock';
+import { WelcomeScreen } from '../../components/WelcomeScreen';
 import StorageService, { UserProgress } from '../../services/storage';
 
 export default function HomeScreen() {
   const [bond, setBond] = useState(0);
   const [xp, setXp] = useState(0);
-  const [petName, setPetName] = useState("Rocky");
+  const [petName, setPetName] = useState("");
+  const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(true); // Start as loading
+  const [showWelcome, setShowWelcome] = useState(false);
   const [isFirstLaunch, setIsFirstLaunch] = useState(false);
   
   // load saved data when app starts
@@ -24,15 +27,22 @@ export default function HomeScreen() {
         const savedProgress = await StorageService.getUserProgress();
                 
         if (savedProgress) {
+          // Found saved data - returning user!
           setBond(savedProgress.petBond);
           setXp(savedProgress.totalXP);
           setPetName(savedProgress.petName);
+          setUserName(savedProgress.userName); // Don't forget this!
+          setShowWelcome(false); // Skip welcome
+        } else {
+          // No saved data - first time user!
+          setShowWelcome(true); // Show welcome
         }
         
       } catch (error) {
         console.log("LOADING: Error:", error);
+        setShowWelcome(true); // Show welcome on error
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Always stop loading last
       }
     };
     
@@ -47,6 +57,7 @@ export default function HomeScreen() {
     
     const saveData = async () => {
       const progressData: UserProgress = {
+        userName: userName,
         petName: petName,
         totalXP: xp,
         currentStreak: 0,
@@ -76,7 +87,7 @@ export default function HomeScreen() {
   const handleNameChange = (newName: string) => {
     setPetName(newName);
   };
-  
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -85,6 +96,13 @@ export default function HomeScreen() {
         </View>
       </SafeAreaView>
     );
+  }
+
+  if (showWelcome) {
+    return <WelcomeScreen onComplete={(userName, petName) => {
+      console.log("User completed welcome:", userName, petName);
+      setShowWelcome(false);
+    }} />;
   }
 
   return (
